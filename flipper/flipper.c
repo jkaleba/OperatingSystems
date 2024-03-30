@@ -33,7 +33,7 @@ void process_file(const char* sourcePath, const char* destPath) {
 
     char line[1024];
     while (fgets(line, sizeof(line), src) != NULL) {
-        line[strcspn(line, "\n")] = '\0'; // Remove newline character
+        line[strcspn(line, "\n")] = '\0';
         char flipped[1024];
         flip_line(line, flipped);
         fprintf(dest, "%s\n", flipped);
@@ -54,13 +54,18 @@ void process_directory(const char* source_dir, const char* dest_dir) {
     struct dirent* entry;
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_type == DT_REG) {
-            char source_path[1024];
-            snprintf(source_path, PATH_MAX, "%s/%s", source_dir, entry->d_name);
 
-            char dest_path[1024];
-            snprintf(dest_path, PATH_MAX, "%s/%s", dest_dir, entry->d_name);
+            const char* ext = strrchr(entry->d_name, '.');
 
-            process_file(source_path, dest_path);
+            if (ext && strcmp(ext, ".txt") == 0) {
+                char source_path[1024];
+                snprintf(source_path, sizeof(source_path), "%s/%s", source_dir, entry->d_name);
+
+                char dest_path[1024];
+                snprintf(dest_path, sizeof(dest_path), "%s/%s", dest_dir, entry->d_name);
+
+                process_file(source_path, dest_path);
+            }
         }
     }
 
