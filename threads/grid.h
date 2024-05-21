@@ -12,7 +12,6 @@ bool is_alive(int row, int col, char *grid);
 
 _Noreturn void *update_grid(void *args);
 
-
 typedef struct {
     int thread_id;
     int start;

@@ -22,6 +22,15 @@ int main(int argc, char **argv) {
     int grid_width = atoi(argv[2]);
     int grid_height = atoi(argv[3]);
 
+    if (n < 1 || grid_width < 1 || grid_height < 1) {
+        printf("Invalid arguments\n");
+        return 1;
+    }
+
+    if (n > grid_width * grid_height) {
+        n = grid_width * grid_height;
+    }
+
     char *foreground = create_grid(grid_width, grid_height);
     char *background = create_grid(grid_width, grid_height);
     char *tmp;
@@ -39,7 +48,6 @@ int main(int argc, char **argv) {
     sigemptyset(&signal_set);
     sigaddset(&signal_set, SIGUSR1);
 
-    // Block SIGUSR1 in the main thread
     pthread_sigmask(SIG_BLOCK, &signal_set, NULL);
 
     for (int i = 0; i < n; i++) {
@@ -63,8 +71,6 @@ int main(int argc, char **argv) {
             pthread_kill(threads[i], SIGUSR1);
         }
 
-        // Allow some time for threads to receive the signal and process
-        usleep(100 * 1000);
         tmp = foreground;
         foreground = background;
         background = tmp;
